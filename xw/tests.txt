@@ -1,0 +1,308 @@
+colors-are-stored-as-numbers
+  extensions [xw]
+  O> xw:create-tab "t1"
+  O> foreach ["s1" "s2" "s3"] [ [s] -> xw:create-slider s [ xw:set-color red ] ]
+  [ xw:color ] xw:of xw:sliders => [15 15 15]
+  O> xw:ask one-of xw:sliders [ xw:set-color [215 50 41] ]
+  [ xw:color ] xw:of xw:sliders => [15 15 15]
+  xw:sliders xw:with [ xw:color = red ] => ["s1" "s2" "s3"]
+  O> xw:ask "s2" [ xw:set-color [215 50 40] ]
+  [ xw:color ] xw:of xw:sliders => [15 [215 50 40 255] 15]
+
+sliders-can-be-positionned-relative-to-one-another
+  extensions [xw]
+  O> xw:create-tab "t1"
+  O> foreach n-values 5 [ [i] -> word "s" i ] xw:create-slider
+  O> (foreach (but-last xw:sliders) (but-first xw:sliders) [ [s1 s2] -> xw:ask s2 [ xw:set-y [ xw:y + xw:height + 10 ] xw:of s1 ]])
+  [ xw:y ] xw:of xw:sliders => [10 70 130 190 250]
+
+all-kinds-can-be-created-queried-and-deleted
+  extensions [xw]
+  xw:tabs => []
+  xw:notes => []
+  xw:checkboxes => []
+  xw:choosers => []
+  xw:multi-choosers => []
+  xw:text-inputs => []
+  xw:numeric-inputs => []
+  xw:buttons => []
+  O> xw:create-tab "t1"
+  O> foreach n-values 5 [ [i] -> word "s" i ] xw:create-slider
+  O> foreach n-values 5 [ [i] -> word "n" i ] xw:create-note
+  O> foreach n-values 5 [ [i] -> word "cb" i ] xw:create-checkbox
+  O> foreach n-values 5 [ [i] -> word "c" i ] xw:create-chooser
+  O> foreach n-values 5 [ [i] -> word "mc" i ] xw:create-multi-chooser
+  O> foreach n-values 5 [ [i] -> word "ti" i ] xw:create-text-input
+  O> foreach n-values 5 [ [i] -> word "ni" i ] xw:create-numeric-input
+  O> foreach n-values 5 [ [i] -> word "b" i ] xw:create-button
+  xw:tabs => ["t1"]
+  xw:notes => ["n0" "n1" "n2" "n3" "n4"]
+  xw:checkboxes => ["cb0" "cb1" "cb2" "cb3" "cb4"]
+  xw:choosers => ["c0" "c1" "c2" "c3" "c4"]
+  xw:multi-choosers => ["mc0" "mc1" "mc2" "mc3" "mc4"]
+  xw:text-inputs => ["ti0" "ti1" "ti2" "ti3" "ti4"]
+  xw:numeric-inputs => ["ni0" "ni1" "ni2" "ni3" "ni4"]
+  xw:buttons => ["b0" "b1" "b2" "b3" "b4"]
+  xw:widgets => ["b0" "b1" "b2" "b3" "b4" "c0" "c1" "c2" "c3" "c4" "cb0" "cb1" "cb2" "cb3" "cb4" "mc0" "mc1" "mc2" "mc3" "mc4" "n0" "n1" "n2" "n3" "n4" "ni0" "ni1" "ni2" "ni3" "ni4" "s0" "s1" "s2" "s3" "s4" "ti0" "ti1" "ti2" "ti3" "ti4"]
+  O> xw:remove "n0"
+  xw:notes => ["n1" "n2" "n3" "n4"]
+  O> xw:remove "cb1"
+  xw:checkboxes => ["cb0" "cb2" "cb3" "cb4"]
+  O> xw:remove "c4"
+  xw:choosers => ["c0" "c1" "c2" "c3"]
+  O> xw:remove one-of xw:buttons
+  length xw:buttons => 4
+  length xw:widgets => 36
+  O> foreach xw:buttons xw:remove
+  length xw:buttons => 0
+  length xw:widgets => 32
+  O> xw:remove "t1"
+  length xw:notes => 0
+  length xw:widgets => 0
+
+readme-demo
+  extensions [xw]
+  globals [glob1]
+  O> xw:create-tab "t1" [ xw:set-title "Parameters" ]
+  [ xw:title ] xw:of "t1" => "Parameters"
+  O> xw:create-slider "population" [ xw:set-label "Population size" ]
+  [ xw:label ] xw:of "population" => "Population size"
+  O> xw:create-multi-chooser "shapes"
+  O> xw:ask "shapes" [ xw:set-label "Other shapes to use" ]
+  [ xw:label ] xw:of "shapes" => "Other shapes to use"
+  O> xw:ask "shapes" [ xw:set-items ["airplane" "arrow" "bug" "butterfly" "turtle"] ]
+  [ xw:items ] xw:of "shapes" => ["airplane" "arrow" "bug" "butterfly" "turtle"]
+  O> xw:ask "shapes" [ xw:set-selected-items n-of 2 xw:items ]
+  [ length xw:selected-items ] xw:of "shapes" => 2
+  [ reduce and map [ [itm] -> member? itm xw:items ] xw:selected-items ] xw:of "shapes" => true
+  O> xw:ask "shapes" [ xw:set-y [ xw:y + xw:height + 10 ] xw:of "population" ]
+  [ xw:y ] xw:of "shapes" => 70
+  O> xw:ask "shapes" [ xw:set-height 150 ]
+  [ xw:height ] xw:of "shapes" => 150
+  O> xw:create-button "setup"
+  O> xw:ask "setup" [ xw:set-label "Push me!" ]
+  [ xw:label ] xw:of "setup" => "Push me!"
+  O> xw:ask "setup" [ xw:set-commands "setup" ]
+  [ xw:commands ] xw:of "setup" => "setup"
+  O> xw:ask "setup" [ xw:set-y [ xw:y + xw:height + 10 ] xw:of "shapes" ]
+  [ xw:y ] xw:of "setup" => 230
+  O> xw:ask xw:widgets [ set glob1 one-of base-colors xw:set-color glob1 + 3 xw:set-font-color glob1 - 3 ]
+  reduce and [ xw:color - 3 = xw:font-color + 3 ] xw:of xw:widgets => true
+  O> create-turtles xw:get "population"
+  count turtles = [ xw:value ] xw:of "population" => true
+
+widgets-created-on-last-tab
+  extensions [xw]
+  O> xw:create-tab "t1"
+  O> xw:create-note "n1"
+  [ xw:tab ] xw:of "n1" = "t1" => true
+  O> xw:create-tab "t2"
+  O> xw:create-button "b1"
+  [ xw:tab ] xw:of "b1" = "t2" => true
+  O> xw:ask "t1" [ xw:set-order 2 ]
+  O> xw:create-slider "s1"
+  [ xw:tab ] xw:of "s1" = "t2" => true
+  O> xw:create-checkbox "cb1" [ xw:set-tab "t1" ]
+  [ xw:tab ] xw:of "cb1" = "t1" => true
+  xw:widgets xw:with [ xw:tab = "t1" ] => ["cb1" "n1"]
+  xw:widgets xw:with [ xw:tab = "t2" ] => ["b1" "s1"]
+
+widgets-removed-with-tab
+  extensions [xw]
+  O> xw:create-tab "t1"
+  O> xw:create-note "n1"
+  O> xw:create-note "n2"
+  O> xw:create-tab "t2"
+  O> xw:create-slider "s1"
+  O> xw:create-slider "s2"
+  xw:widgets xw:with [ xw:tab = "t1" ] => ["n1" "n2"]
+  xw:widgets xw:with [ xw:tab = "t2" ] => ["s1" "s2"]
+  xw:widgets => ["n1" "n2" "s1" "s2"]
+  O> xw:remove "t1"
+  xw:widgets => ["s1" "s2"]
+  O> xw:remove "t2"
+  xw:widgets => []
+
+test-ask-with-of
+  extensions [xw]
+  O> xw:create-tab "t1"
+  O> foreach n-values 5 [ [i] -> word "s" i ] xw:create-slider
+  O> foreach n-values 5 [ [i] -> word "n" i ] xw:create-note
+  O> foreach n-values 5 [ [i] -> word "cb" i ] xw:create-checkbox
+  O> foreach n-values 5 [ [i] -> word "c" i ] xw:create-chooser
+  O> foreach n-values 5 [ [i] -> word "mc" i ] xw:create-multi-chooser
+  O> foreach n-values 5 [ [i] -> word "ti" i ] xw:create-text-input
+  O> foreach n-values 5 [ [i] -> word "ni" i ] xw:create-numeric-input
+  O> foreach n-values 5 [ [i] -> word "b" i ] xw:create-button
+  length xw:widgets => 40
+  O> xw:ask xw:widgets [ xw:set-color red ]
+  length xw:widgets xw:with [ xw:color = red ] => 40
+  O> xw:ask n-of 10 xw:widgets [ xw:set-color blue ]
+  length xw:widgets xw:with [ xw:color = blue ] => 10
+  O> xw:ask one-of xw:widgets [ xw:set-color green ]
+  length xw:widgets xw:with [ xw:color = green ] => 1
+  xw:widgets xw:with [ xw:color = yellow ] => []
+  sort remove-duplicates [ xw:color ] xw:of xw:widgets => [15 55 105]
+
+test-export-import
+  extensions [xw]
+  globals [glob1 glob2 glob3]
+  O> xw:create-tab "t1"
+  O> foreach n-values 5 [ [i] -> word "s" i ] xw:create-slider
+  O> foreach n-values 5 [ [i] -> word "n" i ] xw:create-note
+  O> foreach n-values 5 [ [i] -> word "cb" i ] xw:create-checkbox
+  O> foreach n-values 5 [ [i] -> word "c" i ] xw:create-chooser
+  O> xw:create-tab "t2"
+  O> foreach n-values 5 [ [i] -> word "mc" i ] xw:create-multi-chooser
+  O> foreach n-values 5 [ [i] -> word "ti" i ] xw:create-text-input
+  O> foreach n-values 5 [ [i] -> word "ni" i ] xw:create-numeric-input
+  O> foreach n-values 5 [ [i] -> word "b" i ] xw:create-button
+  O> set glob1 xw:tabs
+  O> set glob2 xw:widgets
+  O> set glob3 [ xw:tab ] xw:of xw:widgets
+  O> xw:export "tests/test1.json"
+  O> xw:clear-all
+  O> xw:import "tests/test1.json"
+  glob1 = xw:tabs => true
+  glob2 = xw:widgets => true
+  glob3 = [ xw:tab ] xw:of xw:widgets => true
+  O> xw:export "tests/test2.json"
+  O> file-open "tests/test1.json"
+  O> set glob1 file-read-line
+  O> file-open "tests/test2.json"
+  O> set glob2 file-read-line
+  glob1 = glob2 => true
+  O> file-close-all
+
+export-import-preserves-values
+  extensions [xw]
+  O> xw:clear-all
+  O> xw:create-tab "t1"
+  O> xw:create-slider "s1" [ xw:set-value 10 ]
+  O> xw:create-chooser "c1" [ xw:set-items ["a" "b" "c" "d"] xw:set-selected-item "b" ]
+  O> xw:create-chooser "c2" [ xw:set-items [1 2 3 4] xw:set-selected-item 2 ]
+  O> xw:create-note "n" [ xw:set-text "a" ]
+  O> xw:create-checkbox "cb" [ xw:set-enabled? false ]
+  O> xw:create-multi-chooser "mc" [ xw:set-items [ "a" "b" "c" "d"] xw:set-selected-items ["b" "c"] ]
+  O> xw:create-text-input "ti" [ xw:set-text "a" ]
+  O> xw:create-numeric-input "ni" [ xw:set-value 10 ]
+  O> xw:create-button "b" [ xw:set-commands "print \"hello world\"" ]
+  O> xw:export "tests/export-import-preserves-values.json"
+  O> xw:clear-all
+  O> xw:import "tests/export-import-preserves-values.json"
+  xw:get "s1" => 10
+  xw:get "c1" => "b"
+  xw:get "c2" => 2
+  xw:get "n" => "a"
+  xw:get "cb" => false
+  xw:get "mc" => ["b" "c"]
+  xw:get "ti" => "a"
+  xw:get "ni" => 10
+  [ xw:commands ] xw:of "b" => "print \"hello world\""
+
+import-multiple-files
+  extensions [xw]
+  O> xw:create-tab "t1"
+  O> foreach n-values 5 [ [i] -> word "s" i ] xw:create-slider
+  O> xw:export "tests/t1.json"
+  O> xw:clear-all
+  O> xw:create-tab "t2"
+  O> foreach n-values 5 [ [i] -> word "mc" i ] xw:create-multi-chooser
+  O> xw:export "tests/t2.json"
+  O> xw:clear-all
+  O> xw:import "tests/t1.json"
+  O> xw:import "tests/t2.json"
+  xw:tabs => ["t1" "t2"]
+  xw:widgets => ["mc0" "mc1" "mc2" "mc3" "mc4" "s0" "s1" "s2" "s3" "s4"]
+
+no-duplicate-keys-allowed
+  extensions [xw]
+  O> xw:create-tab "t1"
+  O> xw:create-tab "t1" => ERROR Extension exception: There is already a widget with value "t1" for property "KEY".
+  O> xw:create-note "n1"
+  O> xw:create-note "n1" => ERROR Extension exception: There is already a widget with value "n1" for property "KEY".
+  O> xw:create-tab "t2"
+  O> xw:create-tab "t2" => ERROR Extension exception: There is already a widget with value "t2" for property "KEY".
+  O> xw:create-note "n1" => ERROR Extension exception: There is already a widget with value "n1" for property "KEY".
+  O> xw:create-note "n2"
+  O> xw:create-note "n2" => ERROR Extension exception: There is already a widget with value "n2" for property "KEY".
+
+select-tab-does-not-crash-when-headless
+  extensions [xw]
+  O> xw:create-tab "t1"
+  O> xw:select-tab "t1"
+
+widgets-need-a-tab
+  extensions [xw]
+  O> xw:create-note "n" => ERROR Extension exception: There currently are no extra tabs.
+  O> xw:create-checkbox "cb" => ERROR Extension exception: There currently are no extra tabs.
+  O> xw:create-chooser "c" => ERROR Extension exception: There currently are no extra tabs.
+  O> xw:create-multi-chooser "mc" => ERROR Extension exception: There currently are no extra tabs.
+  O> xw:create-text-input "ti" => ERROR Extension exception: There currently are no extra tabs.
+  O> xw:create-numeric-input "ni" => ERROR Extension exception: There currently are no extra tabs.
+  O> xw:create-button "b" => ERROR Extension exception: There currently are no extra tabs.
+
+default-getters-and-setters
+  extensions [xw]
+  O> xw:create-tab "t"
+  O> xw:set "t" nobody => ERROR Extension exception: There is no default property defined for widget kind TAB.
+  xw:get "t" => ERROR Extension exception: There is no default property defined for widget kind TAB.
+  O> xw:create-slider "s" [ xw:set-value 1 ]
+  [ xw:value ] xw:of "s" => 1
+  xw:get "s" => 1
+  O> xw:set "s" 2
+  [ xw:value ] xw:of "s" => 2
+  xw:get "s" => 2
+  O> xw:create-note "n" [ xw:set-text "1" ]
+  [ xw:text ] xw:of "n" => "1"
+  xw:get "n" => "1"
+  O> xw:set "n" "2"
+  [ xw:text ] xw:of "n" => "2"
+  xw:get "n" => "2"
+  O> xw:create-checkbox "cb" [ xw:set-selected? true ]
+  [ xw:selected? ] xw:of "cb" => true
+  xw:get "cb" => true
+  O> xw:set "cb" false
+  [ xw:selected? ] xw:of "cb" => false
+  xw:get "cb" => false
+  O> xw:create-chooser "c" [ xw:set-items [0 1 2 3 4] xw:set-selected-item 1 ]
+  [ xw:selected-item ] xw:of "c" => 1
+  xw:get "c" => 1
+  O> xw:set "c" 2
+  [ xw:selected-item ] xw:of "c" => 2
+  xw:get "c" => 2
+  O> xw:create-multi-chooser "mc" [ xw:set-items [0 1 2 3 4] xw:set-selected-items [1 2] ]
+  [ xw:selected-items ] xw:of "mc" => [1 2]
+  xw:get "mc" => [1 2]
+  O> xw:set "mc" [3 4]
+  [ xw:selected-items ] xw:of "mc" => [3 4]
+  xw:get "mc" => [3 4]
+  O> xw:create-text-input "ti" [ xw:set-text "1" ]
+  [ xw:text ] xw:of "ti" => "1"
+  xw:get "ti" => "1"
+  O> xw:set "ti" "2"
+  [ xw:text ] xw:of "ti" => "2"
+  xw:get "ti" => "2"
+  O> xw:create-numeric-input "ni" [ xw:set-value 1 ]
+  [ xw:value ] xw:of "ni" => 1
+  xw:get "ni" => 1
+  O> xw:set "ni" 2
+  [ xw:value ] xw:of "ni" => 2
+  xw:get "ni" => 2
+  O> xw:create-button "b"
+  O> xw:set "b" nobody => ERROR Extension exception: There is no default property defined for widget kind BUTTON.
+  xw:get "b" => ERROR Extension exception: There is no default property defined for widget kind BUTTON.
+
+disabling-tab-leaves-enabled-property-of-widgets-alone
+  extensions [xw]
+  O> xw:create-tab "t"
+  O> xw:create-slider "enabled-slider"
+  O> xw:create-slider "disabled-slider" [ xw:set-enabled? false ]
+  O> xw:ask "t" [ xw:set-enabled? false ]
+  [ list xw:key xw:enabled? ] xw:of xw:widgets => [["disabled-slider" false] ["enabled-slider" true]]
+
+negative-color-values-are-modulated-when-stored
+  extensions [xw]
+  O> xw:create-tab "t"
+  O> xw:create-slider "s" [ xw:set-color -1 ]
+  [ xw:color ] xw:of "s" => 139
